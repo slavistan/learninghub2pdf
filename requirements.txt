@@ -1,0 +1,8 @@
+requests
+selenium
+PyPDF2
+fontTools[woff]
+python-dotenv
+flask
+flask_sock
+pyyaml

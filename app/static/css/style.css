@@ -1,0 +1,32 @@
+body {
+  width: 960px;
+  margin: auto;
+}
+
+form label {
+  text-align: left;
+  font-size: medium;
+  margin-left: 3px;
+  overflow: auto;
+}
+
+#username, #password, #indexhtml {
+  font-size: large;
+  width: 100%;
+  margin: 3px 0 10px 0;
+}
+
+#error-info {
+  font-family: monospace;
+  color: red;
+}
+
+#log-console {
+  height: 330px;
+  width: 100%;
+  margin: 3px 0 10px 0;
+  border: 1px solid #ccc;
+  font-family: monospace;
+  white-space: nowrap;
+  overflow: auto;
+}

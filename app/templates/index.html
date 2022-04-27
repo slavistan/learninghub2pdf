@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SAP Learninghub Ebook to PDF Converter</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+  <body>
+    <h1>SAP Learninghub Ebook to PDF Converter</h1>
+    <form id="credentials" autocomplete="off">
+      <label for="username">Learninghub username (S-User or corporate email address)</label>
+      <input type="text" id="username" value="{{ username_default }}"/>
+      <label for="password">Password</label><br />
+      <input type="password" id="password" value="{{ password_default }}" /><br />
+      <label for="indexhtml">Ebook URL (ends in <i>.../index.html</i>)</label><br />
+      <input type="text" id="indexhtml" value="{{ indexhtml_default }}" /><br />
+      <br />
+      <input type="submit" id="submit" value="Submit">
+      <button type="button" id="download" disabled>Download PDF</button>
+    </form>
+    <div id="log-console">[INFO] Waiting for user input.</div>
+    <div id="error-info"></div>
+    <script>
+      function log(line) {
+        const console = document.getElementById("log-console");
+        console.innerHTML += line + "<br>";
+        console.scrollTop = console.scrollHeight;
+      };
+
+      function downloadUri(uri, filename) {
+          let link = document.createElement("a");
+          link.href = uri;
+          link.download = filename;
+          link.click();
+      }
+
+      /* Decode incoming socket message and dispatch its command. */
+      function dispatch(message) {
+        const packet = JSON.parse(message);
+        if (packet["type"] === "log") {
+          log(packet["value"]);
+        } else if (packet["type"] === "file") {
+          const filename = packet["filename"];
+          const dataUri = "data:application/octet-stream;charset=utf-8;base64," + packet["base64"];
+          downloadUri(dataUri, filename);
+
+          const download_button = document.getElementById("download");
+          download_button.disabled = false;
+          download_button.onclick = () => { downloadUri(dataUri, filename) };
+
+          document.getElementById("submit").disabled = false;
+
+        } else {  /* implying packet["type"] === "error" */
+          document.getElementById("error-info").innerHTML = packet["value"]
+        }
+      }
+
+      /* Create a websocket and configure callback. */
+      const socket = new WebSocket("ws://" + location.host + "/websocket");
+      socket.addEventListener("message", (ev) => {
+        dispatch(ev.data);
+      });
+
+      document.getElementById("credentials").onsubmit = (ev) => {
+        ev.preventDefault();
+
+        /* Send serialized credentials via websocket */
+        const indexhtmlField = document.getElementById("indexhtml");
+        const usernameField = document.getElementById("username");
+        const passwordField = document.getElementById("password");
+        const creds = {
+          indexhtml: indexhtmlField.value,
+          username: usernameField.value,
+          password: passwordField.value
+        }
+        socket.send(JSON.stringify(creds));
+
+        /* Disable download and submit button during conversion */
+        document.getElementById("download").disabled = true;
+        document.getElementById("submit").disabled = true;
+
+        /* Clear debugging console after beginning a new conversion */
+        const console = document.getElementById("log-console");
+        console.innerHTML = "";
+        console.scrollTop = console.scrollHeight;
+      };
+    </script>
+  </body>
+</html>

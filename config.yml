@@ -1,0 +1,8 @@
+port: 5000
+tmpdir: /tmp
+username: ""
+password: ""
+indexhtml: ""
+debug_learninghub_noop: false
+debug_max_pages: 99999
+debug_no_cleanup: false
