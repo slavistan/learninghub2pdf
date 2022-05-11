@@ -1,5 +1,6 @@
 # Todos
 
+- TODO: Automated functionality test to recognizes breaking changes in the learninghub website.
 - TODO: Debugging from inside the container (X-forwarding)
 - FIXME: Hyperlinks such as TOC inside the final document are broken.
 - TODO: Implement serverside logging to a rotating logfile.
