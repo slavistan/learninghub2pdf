@@ -4,6 +4,8 @@ import math
 import shutil
 import subprocess
 import logging
+import random
+import time
 
 from fontTools.ttLib.woff2 import decompress
 from selenium import webdriver
@@ -92,16 +94,23 @@ def acquire_cookies_and_numpages(indexhtml, username, password, screenshot_dir=N
     else:
         def take_snapshot():
             pass
+    
+    # Helper to simulate user input delay.
+    def snooze():
+        time.sleep(random.uniform(0.3, 1.2))
 
     # NOTE: For the user and password fields we use
     #       'EC.element_to_be_clickable' over 'EC.presence_of_element_located'
     #       as the latter sometimes raises a 'ElementNotInteractableException'.
     logger.info("Enter username and confirm.")
+    snooze()
     username_input = WebDriverWait(driver, timeout=90).until(
         EC.element_to_be_clickable((By.ID, "j_username"))
     )
     take_snapshot()
+    snooze()
     username_input.send_keys(username)
+    snooze()
     username_input.send_keys(Keys.RETURN)
 
     logger.info("Enter password and confirm.")
@@ -109,7 +118,9 @@ def acquire_cookies_and_numpages(indexhtml, username, password, screenshot_dir=N
         EC.element_to_be_clickable((By.ID, "password"))
     )
     take_snapshot()
+    snooze()
     password_input.send_keys(password)
+    snooze()
     password_input.send_keys(Keys.RETURN)
 
     logger.info("Click the 'Reject All' button.")
@@ -117,6 +128,7 @@ def acquire_cookies_and_numpages(indexhtml, username, password, screenshot_dir=N
         EC.element_to_be_clickable((By.ID, "truste-consent-required"))
     )
     take_snapshot()
+    snooze()
     reject_button.click()
 
     # Click on the "Browse content" link, which will eventually navigate to
